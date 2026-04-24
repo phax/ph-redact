@@ -1,0 +1,9 @@
+.claude/
+.settings/
+target/
+
+.DS_Store
+.project
+zz
+
+*.iml
