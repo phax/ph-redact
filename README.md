@@ -126,11 +126,13 @@ The build produces two artifacts (replacing x.y.z with the actual version number
 
 ## Maven Coordinates
 
+To use the library in Maven (replacing `x.y.z` with the effective version number):
+
 ```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-redact</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>x.y.z</version>
 </dependency>
 ```
 
