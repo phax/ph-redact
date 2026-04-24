@@ -1,4 +1,4 @@
-# xml-anonymizer
+# ph-redact
 
 XSLT-based XML document anonymizer for e-invoicing formats. Replaces all sensitive and personally identifiable data while preserving document structure, monetary values, tax information, and other non-sensitive business data.
 
@@ -51,7 +51,7 @@ Build the standalone jar and run it:
 
 ```bash
 mvn clean package
-java -jar target/xml-anonymizer-full.jar [options] <files...>
+java -jar target/ph-redact-full.jar [options] <files...>
 ```
 
 **Options:**
@@ -69,16 +69,16 @@ java -jar target/xml-anonymizer-full.jar [options] <files...>
 
 ```bash
 # Anonymize a single file (format auto-detected)
-java -jar xml-anonymizer-full.jar invoice.xml
+java -jar ph-redact-full.jar invoice.xml
 
 # Anonymize multiple files into a specific directory
-java -jar xml-anonymizer-full.jar -t /output/dir invoice1.xml invoice2.xml cii-invoice.xml
+java -jar ph-redact-full.jar -t /output/dir invoice1.xml invoice2.xml cii-invoice.xml
 
 # Force CII format and use custom suffix
-java -jar xml-anonymizer-full.jar -f cii-d16b -s -redacted invoice.xml
+java -jar ph-redact-full.jar -f cii-d16b -s -redacted invoice.xml
 
 # Verbose output
-java -jar xml-anonymizer-full.jar --verbose *.xml
+java -jar ph-redact-full.jar --verbose *.xml
 ```
 
 The output file is written to the target directory with the suffix appended before the file extension.
@@ -121,15 +121,15 @@ mvn clean package
 ```
 
 The build produces two artifacts (replacing x.y.z with the actual version number):
-- `target/xml-anonymizer-x.y.z-SNAPSHOT.jar` - Library jar
-- `target/xml-anonymizer-full.jar` - Standalone executable jar with all dependencies
+- `target/ph-redact-x.y.z-SNAPSHOT.jar` - Library jar
+- `target/ph-redact-full.jar` - Standalone executable jar with all dependencies
 
 ## Maven Coordinates
 
 ```xml
 <dependency>
   <groupId>com.helger</groupId>
-  <artifactId>xml-anonymizer</artifactId>
+  <artifactId>ph-redact</artifactId>
   <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```

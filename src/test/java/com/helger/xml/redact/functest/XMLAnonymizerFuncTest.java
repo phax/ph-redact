@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.xml.anonymizer.functest;
+package com.helger.xml.redact.functest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -27,8 +27,8 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.helger.io.resource.ClassPathResource;
-import com.helger.xml.anonymizer.EAnonymizationFormat;
-import com.helger.xml.anonymizer.XMLAnonymizer;
+import com.helger.xml.redact.EAnonymizationFormat;
+import com.helger.xml.redact.XMLAnonymizer;
 import com.helger.xml.serialize.read.DOMReader;
 
 /**

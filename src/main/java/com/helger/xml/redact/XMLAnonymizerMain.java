@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.xml.anonymizer;
+package com.helger.xml.redact;
 
 import java.io.File;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ import picocli.CommandLine.Parameters;
  * @author Philip Helger
  */
 @Command (description = "XML Anonymizer for UBL 2.1 and CII D16B documents",
-          name = "xml-anonymizer",
+          name = "ph-redact",
           mixinStandardHelpOptions = true,
           separator = " ")
 public class XMLAnonymizerMain implements Callable <Integer>

@@ -24,11 +24,11 @@
     <artifactId>parent-pom</artifactId>
     <version>3.0.3</version>
   </parent>
-  <artifactId>xml-anonymizer</artifactId>
+  <artifactId>ph-redact</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>xml-anonymizer</name>
+  <name>ph-redact</name>
   <description>XSLT-based XML document anonymizer for UBL 2.1 and CII D16B</description>
-  <url>https://github.com/phax/xml-anonymizer</url>
+  <url>https://github.com/phax/ph-redact</url>
   <inceptionYear>2025</inceptionYear>
 
   <licenses>
@@ -40,9 +40,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:https://github.com/phax/xml-anonymizer.git</connection>
-    <developerConnection>scm:git:https://github.com/phax/xml-anonymizer.git</developerConnection>
-    <url>https://github.com/phax/xml-anonymizer</url>
+    <connection>scm:git:https://github.com/phax/ph-redact.git</connection>
+    <developerConnection>scm:git:https://github.com/phax/ph-redact.git</developerConnection>
+    <url>https://github.com/phax/ph-redact</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -119,7 +119,7 @@
               <resource>.SF</resource>
             </transformer>
             <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-              <mainClass>com.helger.xml.anonymizer.XMLAnonymizerMain</mainClass>
+              <mainClass>com.helger.xml.redact.XMLAnonymizerMain</mainClass>
             </transformer>
           </transformers>
         </configuration>
