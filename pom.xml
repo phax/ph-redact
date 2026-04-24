@@ -25,7 +25,7 @@
     <version>3.0.3</version>
   </parent>
   <artifactId>ph-redact</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>ph-redact</name>
   <description>XSLT-based XML document anonymizer for UBL 2.1 and CII D16B</description>
   <url>https://github.com/phax/ph-redact</url>
@@ -43,7 +43,7 @@
     <connection>scm:git:https://github.com/phax/ph-redact.git</connection>
     <developerConnection>scm:git:https://github.com/phax/ph-redact.git</developerConnection>
     <url>https://github.com/phax/ph-redact</url>
-    <tag>HEAD</tag>
+    <tag>ph-redact-1.0.0</tag>
   </scm>
 
   <organization>
