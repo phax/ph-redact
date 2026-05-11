@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,10 +71,9 @@ public enum EAnonymizationFormat implements IHasID <String>
    * Map a DDD syntax ID to the corresponding anonymization format.
    *
    * @param sDDDSyntaxID
-   *        The DDD syntax ID (e.g. "ubl2-invoice", "cii-d16b"). May be
-   *        <code>null</code>.
-   * @return The matching format, or <code>null</code> if the syntax ID is not
-   *         supported for anonymization.
+   *        The DDD syntax ID (e.g. "ubl2-invoice", "cii-d16b"). May be <code>null</code>.
+   * @return The matching format, or <code>null</code> if the syntax ID is not supported for
+   *         anonymization.
    */
   @Nullable
   public static EAnonymizationFormat getFromDDDSyntaxIDOrNull (@Nullable final String sDDDSyntaxID)

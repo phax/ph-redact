@@ -51,7 +51,7 @@ Build the standalone jar and run it:
 
 ```bash
 mvn clean package
-java -jar target/ph-redact-full.jar [options] <files...>
+java -jar ph-redact-cli/target/ph-redact-cli-full.jar [options] <files...>
 ```
 
 **Options:**
@@ -69,16 +69,16 @@ java -jar target/ph-redact-full.jar [options] <files...>
 
 ```bash
 # Anonymize a single file (format auto-detected)
-java -jar ph-redact-full.jar invoice.xml
+java -jar ph-redact-cli-full.jar invoice.xml
 
 # Anonymize multiple files into a specific directory
-java -jar ph-redact-full.jar -t /output/dir invoice1.xml invoice2.xml cii-invoice.xml
+java -jar ph-redact-cli-full.jar -t /output/dir invoice1.xml invoice2.xml cii-invoice.xml
 
 # Force CII format and use custom suffix
-java -jar ph-redact-full.jar -f cii-d16b -s -redacted invoice.xml
+java -jar ph-redact-cli-full.jar -f cii-d16b -s -redacted invoice.xml
 
 # Verbose output
-java -jar ph-redact-full.jar --verbose *.xml
+java -jar ph-redact-cli-full.jar --verbose *.xml
 ```
 
 The output file is written to the target directory with the suffix appended before the file extension.
@@ -106,11 +106,18 @@ The XSLT stylesheets can be used independently with any XSLT 1.0 processor:
 
 ```bash
 # UBL 2.1
-xsltproc src/main/resources/xslt/ubl21-anonymize.xslt invoice.xml > invoice-anonymized.xml
+xsltproc ph-redact/src/main/resources/xslt/ubl21-anonymize.xslt invoice.xml > invoice-anonymized.xml
 
 # CII D16B
-xsltproc src/main/resources/xslt/cii-d16b-anonymize.xslt cii-invoice.xml > cii-invoice-anonymized.xml
+xsltproc ph-redact/src/main/resources/xslt/cii-d16b-anonymize.xslt cii-invoice.xml > cii-invoice-anonymized.xml
 ```
+
+## Project Layout
+
+This is a multi-module Maven project:
+
+- `ph-redact` - The library: format enum, XSLT-based anonymizer, format auto-detection, and the XSLT stylesheets.
+- `ph-redact-cli` - The command-line client (picocli) and standalone fat jar build.
 
 ## Building
 
@@ -120,9 +127,10 @@ Requires Java 17+ and Maven.
 mvn clean package
 ```
 
-The build produces two artifacts (replacing x.y.z with the actual version number):
-- `target/ph-redact-x.y.z-SNAPSHOT.jar` - Library jar
-- `target/ph-redact-full.jar` - Standalone executable jar with all dependencies
+The build produces (replacing x.y.z with the actual version number):
+- `ph-redact/target/ph-redact-x.y.z-SNAPSHOT.jar` - Library jar
+- `ph-redact-cli/target/ph-redact-cli-x.y.z-SNAPSHOT.jar` - CLI jar (lib only)
+- `ph-redact-cli/target/ph-redact-cli-full.jar` - Standalone executable jar with all dependencies
 
 ## Maven Coordinates
 
@@ -142,6 +150,9 @@ Apache License, Version 2.0
 
 ## News and Noteworthy
 
+v1.0.1 - 2026-05-11
+* Restructured the codebase into a multi-module Maven project: `ph-redact` (library) and `ph-redact-cli` (command-line client). The library Maven coordinate `com.helger:ph-redact` is unchanged.
+* The standalone executable jar was renamed from `ph-redact-full.jar` to `ph-redact-cli-full.jar` and is now produced under `ph-redact-cli/target/`.
+
 v1.0.0 - 2026-04-24
 * Initial version
-

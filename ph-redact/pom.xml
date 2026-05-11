@@ -21,15 +21,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.helger</groupId>
-    <artifactId>parent-pom</artifactId>
-    <version>3.0.3</version>
+    <artifactId>ph-redact-parent-pom</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>ph-redact-parent-pom</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <name>ph-redact-parent-pom</name>
-  <description>Base POM to build ph-redact - XSLT-based XML document anonymizer for UBL 2.1 and CII D16B</description>
-  <url>https://github.com/phax/ph-redact</url>
+  <artifactId>ph-redact</artifactId>
+  <packaging>jar</packaging>
+  <name>ph-redact</name>
+  <description>XSLT-based XML document anonymizer for UBL 2.1 and CII D16B - library</description>
+  <url>https://github.com/phax/ph-redact/ph-redact</url>
   <inceptionYear>2026</inceptionYear>
 
   <licenses>
@@ -39,13 +38,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
-  <scm>
-    <connection>scm:git:https://github.com/phax/ph-redact.git</connection>
-    <developerConnection>scm:git:https://github.com/phax/ph-redact.git</developerConnection>
-    <url>https://github.com/phax/ph-redact</url>
-    <tag>HEAD</tag>
-  </scm>
 
   <organization>
     <name>Philip Helger</name>
@@ -61,45 +53,25 @@
     </developer>
   </developers>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>com.helger.commons</groupId>
-        <artifactId>ph-commons-parent-pom</artifactId>
-        <version>12.2.5</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>com.helger</groupId>
-        <artifactId>ph-redact</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.helger</groupId>
-        <artifactId>ddd</artifactId>
-        <version>0.8.6</version>
-      </dependency>
-      <dependency>
-        <groupId>info.picocli</groupId>
-        <artifactId>picocli</artifactId>
-        <version>4.7.7</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger</groupId>
+      <artifactId>ddd</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <modules>
-    <module>ph-redact</module>
-    <module>ph-redact-cli</module>
-  </modules>
 </project>

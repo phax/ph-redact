@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import com.helger.base.string.StringImplode;
 import com.helger.xml.serialize.read.DOMReader;
 
 import picocli.CommandLine;
@@ -58,7 +59,7 @@ public class XMLAnonymizerMain implements Callable <Integer>
   @Option (names = { "--verbose" }, description = "Enable verbose output")
   private boolean m_bVerbose;
 
-  @Parameters (description = "One or more XML files to anonymize", arity = "1..*")
+  @Parameters (paramLabel = "Source XML files", description = "One or more XML files to anonymize", arity = "1..*")
   private List <String> m_aSourceFiles;
 
   @SuppressWarnings ("unused")
@@ -86,7 +87,13 @@ public class XMLAnonymizerMain implements Callable <Integer>
       eForcedFormat = EAnonymizationFormat.getFromIDOrNull (m_sFormat);
       if (eForcedFormat == null)
       {
-        LOGGER.error ("Unknown format '" + m_sFormat + "'. Supported: ubl21, cii-d16b");
+        LOGGER.error ("Unknown format '" +
+                      m_sFormat +
+                      "'. Supported: " +
+                      StringImplode.imploder ()
+                                   .source (EAnonymizationFormat.values (), EAnonymizationFormat::getID)
+                                   .separator (", ")
+                                   .build ());
         return Integer.valueOf (1);
       }
     }
