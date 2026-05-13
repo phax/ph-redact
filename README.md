@@ -1,5 +1,10 @@
 # ph-redact
 
+<!-- ph-badge-start -->
+[![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.helger/ph-redact-parent-pom/badge.svg)](https://maven-badges.sml.io/sonatype-central/com.helger/ph-redact-parent-pom/)
+[![javadoc](https://javadoc.io/badge2/com.helger/ph-redact/javadoc.svg)](https://javadoc.io/doc/com.helger/ph-redact)
+<!-- ph-badge-end -->
+
 XSLT-based XML document anonymizer for e-invoicing formats. Replaces all sensitive and personally identifiable data while preserving document structure, monetary values, tax information, and other non-sensitive business data.
 
 Format detection uses the [DDD (Document Details Determinator)](https://github.com/phax/ddd) library, which also handles unwrapping of SBDH and XHE envelopes.
