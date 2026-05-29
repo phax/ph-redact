@@ -33,7 +33,7 @@ public enum EAnonymizationFormat implements IHasID <String>
   /** OASIS Universal Business Language 2.1 */
   UBL_21 ("ubl21", "xslt/ubl21-anonymize.xslt"),
   /** UN/CEFACT Cross Industry Invoice D16B */
-  CII_D16B ("cii-d16b", "xslt/cii-d16b-anonymize.xslt");
+  CII ("cii", "xslt/cii-anonymize.xslt");
 
   private final String m_sID;
   private final String m_sXSLTPath;
@@ -82,8 +82,9 @@ public enum EAnonymizationFormat implements IHasID <String>
       return null;
     if (sDDDSyntaxID.startsWith ("ubl2-"))
       return UBL_21;
-    if ("cii-d16b".equals (sDDDSyntaxID))
-      return CII_D16B;
+    // Legacy ID "cii-d16b" (DDD < 0.8.8)
+    if ("cii-d16b".equals (sDDDSyntaxID) || "cii".equals (sDDDSyntaxID))
+      return CII;
     return null;
   }
 }

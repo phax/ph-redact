@@ -57,7 +57,7 @@ public final class XMLAnonymizerFuncTest
   public void testDetectFormatCIID16B ()
   {
     final Document aDoc = _readTestFile ("external/cii-d16b/invoice-sample.xml");
-    assertEquals (EAnonymizationFormat.CII_D16B, XMLAnonymizer.detectFormat (aDoc));
+    assertEquals (EAnonymizationFormat.CII, XMLAnonymizer.detectFormat (aDoc));
   }
 
   @Test
@@ -111,7 +111,7 @@ public final class XMLAnonymizerFuncTest
   public void testAnonymizeCIID16BInvoice () throws TransformerException
   {
     final Document aDoc = _readTestFile ("external/cii-d16b/invoice-sample.xml");
-    final XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.CII_D16B);
+    final XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.CII);
     final Document aResult = aAnonymizer.anonymize (aDoc);
     assertNotNull (aResult);
 
@@ -159,7 +159,7 @@ public final class XMLAnonymizerFuncTest
   {
     assertEquals (2, EAnonymizationFormat.values ().length);
     assertEquals (EAnonymizationFormat.UBL_21, EAnonymizationFormat.getFromIDOrNull ("ubl21"));
-    assertEquals (EAnonymizationFormat.CII_D16B, EAnonymizationFormat.getFromIDOrNull ("cii-d16b"));
+    assertEquals (EAnonymizationFormat.CII, EAnonymizationFormat.getFromIDOrNull ("cii"));
     assertNull (EAnonymizationFormat.getFromIDOrNull ("unknown"));
     assertNull (EAnonymizationFormat.getFromIDOrNull (null));
   }
