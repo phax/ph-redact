@@ -163,3 +163,8 @@ v1.0.1 - 2026-05-11
 
 v1.0.0 - 2026-04-24
 * Initial version
+
+---
+
+My personal [Coding Styleguide](https://github.com/phax/meta/blob/master/CodingStyleguide.md) |
+It is appreciated if you star the GitHub project if you like it.
