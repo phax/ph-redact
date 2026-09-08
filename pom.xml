@@ -25,7 +25,7 @@
     <version>3.1.0</version>
   </parent>
   <artifactId>ph-redact-parent-pom</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>ph-redact-parent-pom</name>
   <description>Base POM to build ph-redact - XSLT-based XML document anonymizer for UBL 2.1 and CII D16B</description>
