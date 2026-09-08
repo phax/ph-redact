@@ -15,17 +15,25 @@ The creation of this repository was inspired by https://github.com/valitoolorg/z
 
 ## Supported Formats
 
-- **UBL 2.1** - OASIS Universal Business Language (Invoice, CreditNote, Order, DespatchAdvice, and all other UBL 2.1 document types)
-- **CII D16B** - UN/CEFACT Cross Industry Invoice
+- **UBL** - OASIS Universal Business Language (Invoice, CreditNote, Order, DespatchAdvice, and all other UBL document types)
+- **CII** - UN/CEFACT Cross Industry Invoice
+
+Both editions of EN 16931 are covered by the same stylesheet per syntax, because the namespaces did not
+change between the editions and the 2026 elements are purely additive:
+
+| Edition | UBL | CII |
+|---------|-----|-----|
+| EN 16931:2017 | 2.1 | D16B |
+| EN 16931:2026 | 2.5 | D25A |
 
 ## What Gets Anonymized
 
 | Category | Examples | Replaced With |
 |----------|----------|---------------|
-| Party names | Company names, registration names, trading names | `Anonymous Party` |
-| Contact details | Phone, fax, email | `+00 000 0000000`, `anonymous@example.com` |
-| Person information | First/family/middle name, job title, birth date | `Anonymous Person`, `1900-01-01` |
-| Postal addresses | Street, city, postal code, region, PO box | `Anonymous Street`, `Anonymous City`, `00000` |
+| Party names | Company names, registration names, trading names | `Anonymized Party` |
+| Contact details | Phone, fax, email | `+00 000 0000000`, `anonymized@example.com` |
+| Person information | First/family/middle name, job title, birth date | `Anonymized Person`, `1900-01-01` |
+| Postal addresses | Street, city, postal code, region, PO box | `Anonymized Street`, `Anonymized City`, `00000` |
 | Party identifiers | Endpoint IDs, GLN, party IDs | `ANONYMIZED-PARTY-ID`, `ANONYMIZED-ENDPOINT` |
 | Tax identifiers | VAT numbers, company registration IDs | `ANONYMIZED-TAX-ID`, `ANONYMIZED-COMPANY-ID` |
 | Financial accounts | IBAN, BIC, account names | `ANONYMIZED-IBAN`, `ANONYMIZED-BIC` |
@@ -34,7 +42,12 @@ The creation of this repository was inspired by https://github.com/valitoolorg/z
 | Payment references | Payment IDs, mandate IDs, buyer references | `ANONYMIZED-PAYMENT-ID`, `ANONYMIZED-BUYER-REF` |
 | Notes | Free-text notes (may contain any sensitive data) | `Anonymized note` |
 | URIs | Website URLs, communication URIs | `https://www.example.com`, `ANONYMIZED-URI` |
-| Binary attachments | Embedded document content | Replaced with placeholder |
+| Binary attachments | Embedded document content and filename | Replaced with placeholder, `anonymized.bin` |
+| Document descriptions | Supporting document description, external document location | `Anonymized document description`, `https://www.example.com/anonymized` |
+| Accounting references | Buyer accounting reference (document and line level) | `ANONYMIZED-ACCOUNTING-REF` |
+
+All of these replacement values are built from a single configurable prefix - see
+[Custom replacement prefix](#custom-replacement-prefix).
 
 ## What Is Preserved
 
@@ -49,6 +62,8 @@ The creation of this repository was inspired by https://github.com/valitoolorg/z
 - UBL version and customization IDs
 - Profile and process identifiers
 - Tax scheme identifiers (e.g. `VAT`, `S`)
+- Additional legal information (`cbc:CompanyLegalForm` / trade party `ram:Description`)
+- Allowance and charge reasons, VAT exemption reason texts
 
 ## Usage
 
@@ -67,7 +82,8 @@ java -jar ph-redact-cli/target/ph-redact-cli-full.jar [options] <files...>
 |--------|-------------|---------|
 | `-t`, `--target` | Output directory | Current directory |
 | `-s`, `--suffix` | Output filename suffix | `-anonymized` |
-| `-f`, `--format` | Force format (`ubl21` or `cii-d16b`) | Auto-detect |
+| `-f`, `--format` | Force format (`ubl21` or `cii`) | Auto-detect |
+| `-p`, `--prefix` | Prefix for the replaced identifier values | `ANONYMIZED` |
 | `--verbose` | Enable verbose output | Off |
 | `-h`, `--help` | Show help | |
 | `-V`, `--version` | Show version | |
@@ -82,7 +98,10 @@ java -jar ph-redact-cli-full.jar invoice.xml
 java -jar ph-redact-cli-full.jar -t /output/dir invoice1.xml invoice2.xml cii-invoice.xml
 
 # Force CII format and use custom suffix
-java -jar ph-redact-cli-full.jar -f cii-d16b -s -redacted invoice.xml
+java -jar ph-redact-cli-full.jar -f cii -s -redacted invoice.xml
+
+# Use a custom prefix for the replaced identifier values
+java -jar ph-redact-cli-full.jar -p REDACTED invoice.xml
 
 # Verbose output
 java -jar ph-redact-cli-full.jar --verbose *.xml
@@ -103,20 +122,49 @@ XMLAnonymizer.anonymizeAutoDetect (new File ("input.xml"), new File ("output.xml
 
 // DOM-based
 Document aDoc = DOMReader.readXMLDOM (new File ("invoice.xml"));
-XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.CII_D16B);
+XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.CII);
 Document aResult = aAnonymizer.anonymize (aDoc);
 ```
+
+### Custom replacement prefix
+
+All replacement values are built from a single configurable prefix plus a context specific remainder.
+If no prefix is provided, `ANONYMIZED` is used:
+
+```java
+// Results in REDACTED-DOC-ID, Redacted Party, redacted@example.com, ...
+XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.UBL_21, "REDACTED");
+
+// Same for the auto-detecting convenience method
+XMLAnonymizer.anonymizeAutoDetect (new File ("input.xml"), new File ("output.xml"), "REDACTED");
+```
+
+The case of the prefix is normalized per context, so the output looks the same no matter how the
+prefix itself is written:
+
+| Context | Case | Example with prefix `ANONYMIZED` | Example with prefix `REDACTED` |
+|---------|------|----------------------------------|--------------------------------|
+| Identifiers | upper | `ANONYMIZED-DOC-ID` | `REDACTED-DOC-ID` |
+| Human readable texts | mixed | `Anonymized Party` | `Redacted Party` |
+| Mail addresses, URLs, filenames | lower | `anonymized@example.com` | `redacted@example.com` |
+
+Values that carry no wording (`+00 000 0000000`, `00000`, `1900-01-01`, `0000000000000000`, the
+base64 content of embedded attachments, ...) are independent of the prefix.
 
 ### Standalone XSLT
 
 The XSLT stylesheets can be used independently with any XSLT 1.0 processor:
 
 ```bash
-# UBL 2.1
+# UBL
 xsltproc ph-redact/src/main/resources/xslt/ubl21-anonymize.xslt invoice.xml > invoice-anonymized.xml
 
-# CII D16B
-xsltproc ph-redact/src/main/resources/xslt/cii-d16b-anonymize.xslt cii-invoice.xml > cii-invoice-anonymized.xml
+# CII
+xsltproc ph-redact/src/main/resources/xslt/cii-anonymize.xslt cii-invoice.xml > cii-invoice-anonymized.xml
+
+# With a custom replacement prefix
+xsltproc --stringparam anonymization-prefix REDACTED \
+         ph-redact/src/main/resources/xslt/ubl21-anonymize.xslt invoice.xml > invoice-anonymized.xml
 ```
 
 ## Project Layout
@@ -156,6 +204,12 @@ To use the library in Maven (replacing `x.y.z` with the effective version number
 Apache License, Version 2.0
 
 ## News and Noteworthy
+
+v1.0.2 - work in progress
+* Added the elements introduced by the EN 16931:2026 syntax bindings (UBL 2.5 and CII D25A) to both stylesheets. UBL: `cac:Annotation/cbc:AnnotationContent`, `cac:DeliveryNoteDocumentReference/cbc:ID`, `cac:DocumentReference/cbc:ID`, `cac:OrderReference/cbc:SalesOrderID`. CII: `ram:BuyerReferenceID` (renamed from `ram:BuyerReference` in D25A) and `ram:DeliveryNoteReferencedDocument/ram:IssuerAssignedID`.
+* Closed further gaps that existed in both editions. UBL: `cbc:AccountingCost`, `cbc:AccountingCostCode`, `cbc:DocumentDescription`, `cac:ExternalReference/cbc:URI` and the `@filename` of the embedded binary object. CII: `ram:CreditorReferenceID`, `ram:DirectDebitMandateID`, `ram:SpecifiedProcuringProject`, `ram:ReceivableSpecifiedTradeAccountingAccount/ram:ID`, `ram:PayableSpecifiedTradeAccountingAccount/ram:ID`, `ram:SpecifiedTradePaymentTerms/ram:Description`, `ram:AdditionalReferencedDocument/ram:Name`, `ram:AdditionalReferencedDocument/ram:URIID` and the `@filename` of the attachment.
+* The prefix of all replacement values is now configurable via the XSLT parameter `anonymization-prefix`, the new `XMLAnonymizer` constructor parameter and the new CLI option `-p` / `--prefix`. The default value `ANONYMIZED` is unchanged. Its case is normalized per context: upper case for identifiers (`ANONYMIZED-DOC-ID`), mixed case for human readable texts (`Anonymized Party`) and lower case for mail addresses, URLs and filenames (`anonymized@example.com`).
+* Harmonized the textual replacement values: the ones that previously read `Anonymous ...` now read `Anonymized ...` (`Anonymous Party` became `Anonymized Party`, `anonymous@example.com` became `anonymized@example.com`, and so on).
 
 v1.0.1 - 2026-05-11
 * Restructured the codebase into a multi-module Maven project: `ph-redact` (library) and `ph-redact-cli` (command-line client). The library Maven coordinate `com.helger:ph-redact` is unchanged.

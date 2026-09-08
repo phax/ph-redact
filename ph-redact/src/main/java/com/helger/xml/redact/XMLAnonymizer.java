@@ -37,7 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import com.helger.annotation.Nonempty;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
 import com.helger.ddd.DocumentDetails;
 import com.helger.ddd.DocumentDetailsDeterminator;
 import com.helger.ddd.model.DDDSyntaxList;
@@ -46,13 +48,18 @@ import com.helger.io.resource.ClassPathResource;
 import com.helger.xml.serialize.read.DOMReader;
 
 /**
- * Main class for anonymizing XML documents using XSLT transformations. Supports UBL 2.1 and CII
- * D16B formats.
+ * Main class for anonymizing XML documents using XSLT transformations. Supports UBL (2.1 and 2.5)
+ * and CII (D16B and D25A) documents.
  *
  * @author Philip Helger
  */
 public class XMLAnonymizer
 {
+  /** The name of the XSLT parameter that receives the anonymization prefix */
+  public static final String XSLT_PARAM_ANONYMIZATION_PREFIX = "anonymization-prefix";
+  /** The default prefix of all identifier replacement values */
+  public static final String DEFAULT_ANONYMIZATION_PREFIX = "ANONYMIZED";
+
   private static final Logger LOGGER = LoggerFactory.getLogger (XMLAnonymizer.class);
   private static final DocumentDetailsDeterminator DDD = new DocumentDetailsDeterminator (DDDSyntaxList.getDefaultSyntaxList (),
                                                                                           DDDValueProviderList.getDefaultValueProviderList ());
@@ -63,18 +70,36 @@ public class XMLAnonymizer
   }
 
   private final EAnonymizationFormat m_eFormat;
+  private final String m_sAnonymizationPrefix;
   private final Templates m_aTemplates;
 
   /**
-   * Constructor.
+   * Constructor using {@link #DEFAULT_ANONYMIZATION_PREFIX}.
    *
    * @param eFormat
    *        The anonymization format to use. May not be <code>null</code>.
    */
   public XMLAnonymizer (@NonNull final EAnonymizationFormat eFormat)
   {
+    this (eFormat, DEFAULT_ANONYMIZATION_PREFIX);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param eFormat
+   *        The anonymization format to use. May not be <code>null</code>.
+   * @param sAnonymizationPrefix
+   *        The prefix to be used for all identifier replacement values. The field specific suffix
+   *        (e.g. "-DOC-ID") is appended to it. If <code>null</code> or empty,
+   *        {@link #DEFAULT_ANONYMIZATION_PREFIX} is used.
+   */
+  public XMLAnonymizer (@NonNull final EAnonymizationFormat eFormat, @Nullable final String sAnonymizationPrefix)
+  {
     ValueEnforcer.notNull (eFormat, "Format");
     m_eFormat = eFormat;
+    m_sAnonymizationPrefix = StringHelper.hasNoText (sAnonymizationPrefix) ? DEFAULT_ANONYMIZATION_PREFIX
+                                                                          : sAnonymizationPrefix;
     m_aTemplates = _loadTemplates (eFormat);
   }
 
@@ -105,10 +130,23 @@ public class XMLAnonymizer
     return m_eFormat;
   }
 
+  /**
+   * @return The prefix used for all identifier replacement values. Neither <code>null</code> nor
+   *         empty.
+   */
+  @NonNull
+  @Nonempty
+  public String getAnonymizationPrefix ()
+  {
+    return m_sAnonymizationPrefix;
+  }
+
   @NonNull
   private Transformer _createTransformer () throws TransformerException
   {
-    return m_aTemplates.newTransformer ();
+    final Transformer ret = m_aTemplates.newTransformer ();
+    ret.setParameter (XSLT_PARAM_ANONYMIZATION_PREFIX, m_sAnonymizationPrefix);
+    return ret;
   }
 
   /**
@@ -216,7 +254,8 @@ public class XMLAnonymizer
   }
 
   /**
-   * Convenience method to anonymize an XML file with auto-detected format.
+   * Convenience method to anonymize an XML file with auto-detected format, using
+   * {@link #DEFAULT_ANONYMIZATION_PREFIX}.
    *
    * @param aInputFile
    *        The input XML file. May not be <code>null</code>.
@@ -225,6 +264,25 @@ public class XMLAnonymizer
    * @return <code>true</code> if anonymization was successful, <code>false</code> otherwise.
    */
   public static boolean anonymizeAutoDetect (@NonNull final File aInputFile, @NonNull final File aOutputFile)
+  {
+    return anonymizeAutoDetect (aInputFile, aOutputFile, DEFAULT_ANONYMIZATION_PREFIX);
+  }
+
+  /**
+   * Convenience method to anonymize an XML file with auto-detected format.
+   *
+   * @param aInputFile
+   *        The input XML file. May not be <code>null</code>.
+   * @param aOutputFile
+   *        The output file. May not be <code>null</code>.
+   * @param sAnonymizationPrefix
+   *        The prefix to be used for all identifier replacement values. If <code>null</code> or
+   *        empty, {@link #DEFAULT_ANONYMIZATION_PREFIX} is used.
+   * @return <code>true</code> if anonymization was successful, <code>false</code> otherwise.
+   */
+  public static boolean anonymizeAutoDetect (@NonNull final File aInputFile,
+                                             @NonNull final File aOutputFile,
+                                             @Nullable final String sAnonymizationPrefix)
   {
     ValueEnforcer.notNull (aInputFile, "InputFile");
     ValueEnforcer.notNull (aOutputFile, "OutputFile");
@@ -249,7 +307,7 @@ public class XMLAnonymizer
 
     try
     {
-      new XMLAnonymizer (eFormat).anonymize (aInputFile, aOutputFile);
+      new XMLAnonymizer (eFormat, sAnonymizationPrefix).anonymize (aInputFile, aOutputFile);
       return true;
     }
     catch (final TransformerException ex)

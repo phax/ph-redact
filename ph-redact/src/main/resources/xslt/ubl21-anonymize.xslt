@@ -18,9 +18,11 @@
 
 -->
 <!--
-  XSLT 1.0 stylesheet to anonymize sensitive data in UBL 2.1 documents.
-  Covers all main UBL 2.1 document types (Invoice, CreditNote, Order, DespatchAdvice, etc.)
+  XSLT 1.0 stylesheet to anonymize sensitive data in UBL documents.
+  Covers all main UBL document types (Invoice, CreditNote, Order, DespatchAdvice, etc.)
   since they all share the same CommonBasicComponents and CommonAggregateComponents namespaces.
+  Contains the elements of the EN 16931:2017 binding (UBL 2.1) as well as the elements added by
+  the EN 16931:2026 binding (UBL 2.5) - the namespaces of UBL 2.1 and UBL 2.5 are identical.
 -->
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -29,6 +31,26 @@
 
   <xsl:output method="xml" encoding="UTF-8" indent="yes" />
   <xsl:strip-space elements="*" />
+
+  <!--
+    Prefix of all replacement values. The context specific remainder (e.g. "-DOC-ID", " Party",
+    "@example.com") is appended to it. The default value is mirrored in
+    XMLAnonymizer.DEFAULT_ANONYMIZATION_PREFIX.
+  -->
+  <xsl:param name="anonymization-prefix" select="'ANONYMIZED'" />
+
+  <!--
+    Case variants of the prefix: upper case for identifiers ("ANONYMIZED-DOC-ID"), mixed case for
+    human readable texts ("Anonymized Party") and lower case for mail addresses, URLs and filenames
+    ("anonymized@example.com").
+  -->
+  <xsl:variable name="lowercase-chars" select="'abcdefghijklmnopqrstuvwxyz'" />
+  <xsl:variable name="uppercase-chars" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
+  <xsl:variable name="prefix-upper" select="translate($anonymization-prefix, $lowercase-chars, $uppercase-chars)" />
+  <xsl:variable name="prefix-lower" select="translate($anonymization-prefix, $uppercase-chars, $lowercase-chars)" />
+  <xsl:variable name="prefix-text"
+                select="concat(translate(substring($anonymization-prefix, 1, 1), $lowercase-chars, $uppercase-chars),
+                               substring($prefix-lower, 2))" />
 
   <!-- ==================== Identity transform ==================== -->
   <xsl:template match="@*|node()">
@@ -41,7 +63,7 @@
 
   <!-- Root document ID (Invoice/ID, CreditNote/ID, Order/ID, etc.) -->
   <xsl:template match="/*[namespace-uri()!='urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2']/cbc:ID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-DOC-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-DOC-ID')" /></xsl:copy>
   </xsl:template>
 
   <!-- UUID -->
@@ -54,6 +76,7 @@
   <xsl:template match="cac:OrderReference/cbc:ID |
                        cac:ContractDocumentReference/cbc:ID |
                        cac:DespatchDocumentReference/cbc:ID |
+                       cac:DeliveryNoteDocumentReference/cbc:ID |
                        cac:ReceiptDocumentReference/cbc:ID |
                        cac:OriginatorDocumentReference/cbc:ID |
                        cac:AdditionalDocumentReference/cbc:ID |
@@ -63,8 +86,14 @@
                        cac:SelfBilledInvoiceDocumentReference/cbc:ID |
                        cac:SelfBilledCreditNoteDocumentReference/cbc:ID |
                        cac:DebitNoteDocumentReference/cbc:ID |
-                       cac:StatementDocumentReference/cbc:ID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-REF</xsl:text></xsl:copy>
+                       cac:StatementDocumentReference/cbc:ID |
+                       cac:DocumentReference/cbc:ID">
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-REF')" /></xsl:copy>
+  </xsl:template>
+
+  <!-- Sales order reference -->
+  <xsl:template match="cac:OrderReference/cbc:SalesOrderID">
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-REF')" /></xsl:copy>
   </xsl:template>
 
   <!-- Billing reference document IDs -->
@@ -72,7 +101,7 @@
                        cac:BillingReference/cac:CreditNoteDocumentReference/cbc:ID |
                        cac:BillingReference/cac:DebitNoteDocumentReference/cbc:ID |
                        cac:BillingReference/cac:SelfBilledInvoiceDocumentReference/cbc:ID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-REF</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-REF')" /></xsl:copy>
   </xsl:template>
 
   <!-- Line item IDs -->
@@ -88,44 +117,44 @@
   <!-- ==================== Party identification ==================== -->
 
   <xsl:template match="cbc:EndpointID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-ENDPOINT</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-ENDPOINT')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:PartyIdentification/cbc:ID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-PARTY-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-PARTY-ID')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:PartyLegalEntity/cbc:CompanyID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-COMPANY-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-COMPANY-ID')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:PartyLegalEntity/cbc:RegistrationName">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Company</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Company')" /></xsl:copy>
   </xsl:template>
 
   <!-- Tax registration (VAT number) -->
   <xsl:template match="cac:PartyTaxScheme/cbc:CompanyID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-TAX-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-TAX-ID')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:PartyTaxScheme/cbc:RegistrationName">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Tax Entity</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Tax Entity')" /></xsl:copy>
   </xsl:template>
 
   <!-- ==================== Party names ==================== -->
 
   <xsl:template match="cac:PartyName/cbc:Name">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Party</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Party')" /></xsl:copy>
   </xsl:template>
 
   <!-- ==================== Contact information ==================== -->
 
   <xsl:template match="cac:Contact/cbc:ID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-CONTACT-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-CONTACT-ID')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:Contact/cbc:Name">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Contact</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Contact')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:Telephone">
@@ -137,13 +166,13 @@
   </xsl:template>
 
   <xsl:template match="cbc:ElectronicMail">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>anonymous@example.com</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-lower, '@example.com')" /></xsl:copy>
   </xsl:template>
 
   <!-- ==================== Person information ==================== -->
 
   <xsl:template match="cac:Person/cbc:FirstName">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="$prefix-text" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:Person/cbc:FamilyName">
@@ -155,7 +184,7 @@
   </xsl:template>
 
   <xsl:template match="cac:Person/cbc:OtherName">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="$prefix-text" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:Person/cbc:Title">
@@ -171,7 +200,7 @@
   </xsl:template>
 
   <xsl:template match="cac:Person/cbc:ID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-PERSON-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-PERSON-ID')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:Person/cbc:NationalityID">
@@ -183,7 +212,7 @@
   </xsl:template>
 
   <xsl:template match="cac:Person/cbc:BirthplaceName">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous City</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' City')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:Person/cbc:GenderCode">
@@ -193,11 +222,11 @@
   <!-- ==================== Address information ==================== -->
 
   <xsl:template match="cbc:StreetName">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Street</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Street')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:AdditionalStreetName">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Additional Street</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Additional Street')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:BuildingName">
@@ -209,7 +238,7 @@
   </xsl:template>
 
   <xsl:template match="cbc:CityName">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous City</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' City')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:PostalZone">
@@ -217,11 +246,11 @@
   </xsl:template>
 
   <xsl:template match="cbc:CitySubdivisionName">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous District</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' District')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:CountrySubentity">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Region</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Region')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:CountrySubentityCode">
@@ -229,11 +258,11 @@
   </xsl:template>
 
   <xsl:template match="cbc:Region">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Region</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Region')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:District">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous District</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' District')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:BlockName">
@@ -253,15 +282,15 @@
   </xsl:template>
 
   <xsl:template match="cbc:Department">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Department</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Department')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:MarkAttention">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Person</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Person')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:MarkCare">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Person</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Person')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:PlotIdentification">
@@ -269,11 +298,11 @@
   </xsl:template>
 
   <xsl:template match="cbc:InhouseMail">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>anonymous</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="$prefix-lower" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:AddressLine/cbc:Line">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Address Line</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Address Line')" /></xsl:copy>
   </xsl:template>
 
   <!-- ==================== Financial account information ==================== -->
@@ -282,35 +311,35 @@
                        cac:PayeeFinancialAccount/cbc:ID |
                        cac:PayerFinancialAccount/cbc:ID |
                        cac:CreditAccount/cbc:ID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-IBAN</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-IBAN')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:FinancialAccount/cbc:Name |
                         cac:PayeeFinancialAccount/cbc:Name |
                         cac:PayerFinancialAccount/cbc:Name">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Account</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Account')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:FinancialAccount/cbc:AliasName |
                         cac:PayeeFinancialAccount/cbc:AliasName |
                         cac:PayerFinancialAccount/cbc:AliasName">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Account Alias</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Account Alias')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:FinancialInstitutionBranch/cbc:ID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-BIC</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-BIC')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:FinancialInstitutionBranch/cbc:Name">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Bank</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Bank')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:FinancialInstitution/cbc:ID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-BIC</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-BIC')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:FinancialInstitution/cbc:Name">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymous Bank</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' Bank')" /></xsl:copy>
   </xsl:template>
 
   <!-- ==================== Payment card information ==================== -->
@@ -320,7 +349,7 @@
   </xsl:template>
 
   <xsl:template match="cac:CardAccount/cbc:HolderName">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMOUS CARDHOLDER</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, ' CARDHOLDER')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:CardAccount/cbc:CV2ID">
@@ -328,7 +357,7 @@
   </xsl:template>
 
   <xsl:template match="cac:CardAccount/cbc:IssuerID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="$prefix-upper" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:CardAccount/cbc:IssueNumberID">
@@ -338,21 +367,21 @@
   <!-- ==================== Payment means ==================== -->
 
   <xsl:template match="cac:PaymentMeans/cbc:PaymentID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-PAYMENT-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-PAYMENT-ID')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:PaymentMeans/cbc:InstructionID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-INSTRUCTION-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-INSTRUCTION-ID')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:PaymentMeans/cbc:InstructionNote">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymized payment instruction</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' payment instruction')" /></xsl:copy>
   </xsl:template>
 
   <!-- ==================== Payment mandate ==================== -->
 
   <xsl:template match="cac:PaymentMandate/cbc:ID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-MANDATE-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-MANDATE-ID')" /></xsl:copy>
   </xsl:template>
 
   <!-- ==================== URIs ==================== -->
@@ -361,38 +390,57 @@
     <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>https://www.example.com</xsl:text></xsl:copy>
   </xsl:template>
 
+  <!-- External document location -->
+  <xsl:template match="cac:ExternalReference/cbc:URI">
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat('https://www.example.com/', $prefix-lower)" /></xsl:copy>
+  </xsl:template>
+
   <!-- ==================== Notes (may contain sensitive free text) ==================== -->
 
   <xsl:template match="cbc:Note">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymized note</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' note')" /></xsl:copy>
+  </xsl:template>
+
+  <!-- Invoice note of UBL 2.5 (replaces the document level cbc:Note) -->
+  <xsl:template match="cac:Annotation/cbc:AnnotationContent">
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' note')" /></xsl:copy>
   </xsl:template>
 
   <!-- ==================== Delivery location ==================== -->
 
   <xsl:template match="cac:DeliveryLocation/cbc:ID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-LOCATION-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-LOCATION-ID')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cac:DeliveryLocation/cbc:Description">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>Anonymized location</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' location')" /></xsl:copy>
   </xsl:template>
 
   <!-- ==================== Buyer/Customer reference ==================== -->
 
   <xsl:template match="cbc:BuyerReference">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-BUYER-REF</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-BUYER-REF')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:CustomerAssignedAccountID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-ACCOUNT-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-ACCOUNT-ID')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:SupplierAssignedAccountID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-ACCOUNT-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-ACCOUNT-ID')" /></xsl:copy>
   </xsl:template>
 
   <xsl:template match="cbc:AdditionalAccountID">
-    <xsl:copy><xsl:apply-templates select="@*" /><xsl:text>ANONYMIZED-ACCOUNT-ID</xsl:text></xsl:copy>
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-ACCOUNT-ID')" /></xsl:copy>
+  </xsl:template>
+
+  <!-- Buyer accounting reference (document and line level) -->
+  <xsl:template match="cbc:AccountingCost">
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-ACCOUNTING-REF')" /></xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="cbc:AccountingCostCode">
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-upper, '-ACCOUNTING-REF')" /></xsl:copy>
   </xsl:template>
 
   <!-- ==================== Attached document content ==================== -->
@@ -403,6 +451,18 @@
       <!-- Replace binary content with empty base64 -->
       <xsl:text>QU5PTllNSVpFRA==</xsl:text>
     </xsl:copy>
+  </xsl:template>
+
+  <!-- Attached document filename -->
+  <xsl:template match="cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@filename">
+    <xsl:attribute name="filename">
+      <xsl:value-of select="concat($prefix-lower, '.bin')" />
+    </xsl:attribute>
+  </xsl:template>
+
+  <!-- Supporting document description -->
+  <xsl:template match="cbc:DocumentDescription">
+    <xsl:copy><xsl:apply-templates select="@*" /><xsl:value-of select="concat($prefix-text, ' document description')" /></xsl:copy>
   </xsl:template>
 
 </xsl:stylesheet>

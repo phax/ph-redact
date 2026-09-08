@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+         xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+         xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+  <cbc:UBLVersionID>2.5</cbc:UBLVersionID>
+  <cbc:CustomizationID>urn:cen.eu:en16931:2026</cbc:CustomizationID>
+  <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
+  <cbc:ID>INV-2026-004711</cbc:ID>
+  <cbc:IssueDate>2026-01-15</cbc:IssueDate>
+  <cbc:DueDate>2026-02-14</cbc:DueDate>
+  <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
+  <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
+  <cbc:AccountingCost>COST-CENTRE-4711</cbc:AccountingCost>
+
+  <cac:BuyerAssignedReference>
+    <cbc:BuyerReferenceCode>ADE</cbc:BuyerReferenceCode>
+    <cbc:BuyerReference>PO-2026-5678</cbc:BuyerReference>
+  </cac:BuyerAssignedReference>
+
+  <cac:Annotation>
+    <cbc:SubjectCode>AAI</cbc:SubjectCode>
+    <cbc:AnnotationContent>Please pay within 30 days. Contact John Smith at +49 171 1234567 for questions.</cbc:AnnotationContent>
+  </cac:Annotation>
+
+  <cac:OrderReference>
+    <cbc:ID>ORD-2026-9876</cbc:ID>
+    <cbc:SalesOrderID>SALES-ORD-2026-321</cbc:SalesOrderID>
+  </cac:OrderReference>
+
+  <cac:DeliveryNoteDocumentReference>
+    <cbc:ID>DELNOTE-2026-8888</cbc:ID>
+  </cac:DeliveryNoteDocumentReference>
+
+  <cac:ProjectReference>
+    <cbc:ID>PROJECT-ALPHA-2026</cbc:ID>
+  </cac:ProjectReference>
+
+  <cac:AdditionalDocumentReference>
+    <cbc:ID>DOC-916</cbc:ID>
+    <cbc:DocumentTypeCode listID="1001">916</cbc:DocumentTypeCode>
+    <cbc:DocumentDescription>Timesheet of Hans Mueller for January 2026</cbc:DocumentDescription>
+    <cac:Attachment>
+      <cbc:EmbeddedDocumentBinaryObject mimeCode="application/pdf"
+                                        filename="timesheet-hans-mueller.pdf">VGltZXNoZWV0</cbc:EmbeddedDocumentBinaryObject>
+      <cac:ExternalReference>
+        <cbc:URI>https://intranet.acme-corp.de/timesheets/hans-mueller.pdf</cbc:URI>
+      </cac:ExternalReference>
+    </cac:Attachment>
+  </cac:AdditionalDocumentReference>
+
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <cbc:EndpointID schemeID="0088">4000001987658</cbc:EndpointID>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="SEPA">DE98ZZZ09999999999</cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyName>
+        <cbc:Name>Acme Corporation GmbH</cbc:Name>
+      </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:StreetName>Hauptstrasse 42</cbc:StreetName>
+        <cbc:CityName>Munich</cbc:CityName>
+        <cbc:PostalZone>80331</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>DE</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>DE123456789</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>Acme Corporation GmbH</cbc:RegistrationName>
+        <cbc:CompanyID schemeID="0002">HRB 12345</cbc:CompanyID>
+        <cbc:CompanyLegalForm>Gesellschaft mit beschraenkter Haftung</cbc:CompanyLegalForm>
+      </cac:PartyLegalEntity>
+      <cac:Contact>
+        <cbc:Name>Hans Mueller</cbc:Name>
+        <cbc:Telephone>+49 89 12345678</cbc:Telephone>
+        <cbc:ElectronicMail>hans.mueller@acme-corp.de</cbc:ElectronicMail>
+      </cac:Contact>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cbc:EndpointID schemeID="0088">5790002221134</cbc:EndpointID>
+      <cac:PartyName>
+        <cbc:Name>Beta Industries A/S</cbc:Name>
+      </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:StreetName>Vesterbrogade 15</cbc:StreetName>
+        <cbc:CityName>Copenhagen</cbc:CityName>
+        <cbc:PostalZone>1620</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>DK</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>Beta Industries A/S</cbc:RegistrationName>
+        <cbc:CompanyID schemeID="0184">DK12345678</cbc:CompanyID>
+      </cac:PartyLegalEntity>
+      <cac:Contact>
+        <cbc:Name>Marie Jensen</cbc:Name>
+        <cbc:Telephone>+45 33 123456</cbc:Telephone>
+        <cbc:ElectronicMail>marie.jensen@beta-ind.dk</cbc:ElectronicMail>
+      </cac:Contact>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+
+  <cac:PaymentMeans>
+    <cbc:PaymentMeansCode>59</cbc:PaymentMeansCode>
+    <cbc:PaymentID>INV-2026-004711</cbc:PaymentID>
+    <cac:PaymentMandate>
+      <cbc:ID>MANDATE-2026-0815</cbc:ID>
+      <cac:PayerFinancialAccount>
+        <cbc:ID>DK5000400440116243</cbc:ID>
+        <cbc:Name>Beta Industries Main Account</cbc:Name>
+        <cac:FinancialInstitutionBranch>
+          <cbc:ID>DABADKKKXXX</cbc:ID>
+        </cac:FinancialInstitutionBranch>
+      </cac:PayerFinancialAccount>
+    </cac:PaymentMandate>
+  </cac:PaymentMeans>
+
+  <cac:PaymentTerms>
+    <cbc:Note>Net 30 days, contact Hans Mueller for a payment plan</cbc:Note>
+  </cac:PaymentTerms>
+
+  <cac:CollectionInvoiceLine>
+    <cbc:ID>1</cbc:ID>
+    <cbc:TaxInclusiveLineExtensionAmount currencyID="EUR">1.75</cbc:TaxInclusiveLineExtensionAmount>
+    <cac:Item>
+      <cbc:Description>Recycling fee</cbc:Description>
+    </cac:Item>
+  </cac:CollectionInvoiceLine>
+
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="EUR">190.00</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="EUR">1000.00</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="EUR">190.00</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>19</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:TaxTotal>
+
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="EUR">1000.00</cbc:LineExtensionAmount>
+    <cbc:TaxExclusiveAmount currencyID="EUR">1000.00</cbc:TaxExclusiveAmount>
+    <cbc:TaxInclusiveAmount currencyID="EUR">1190.00</cbc:TaxInclusiveAmount>
+    <cbc:PayableAmount currencyID="EUR">1190.00</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+
+  <cac:InvoiceLine>
+    <cbc:ID>1</cbc:ID>
+    <cbc:InvoicedQuantity unitCode="C62">10</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="EUR">1000.00</cbc:LineExtensionAmount>
+    <cbc:AccountingCost>LINE-COST-CENTRE-99</cbc:AccountingCost>
+    <cac:DocumentReference>
+      <cbc:ID schemeID="AVE">METERING-POINT-DE0001234</cbc:ID>
+      <cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>
+    </cac:DocumentReference>
+    <cac:OrderLineReference>
+      <cbc:LineID>5</cbc:LineID>
+      <cbc:SalesOrderLineID>9</cbc:SalesOrderLineID>
+      <cac:OrderReference>
+        <cbc:ID>LINE-ORD-2026-1</cbc:ID>
+        <cbc:SalesOrderID>LINE-SALES-ORD-2026-1</cbc:SalesOrderID>
+      </cac:OrderReference>
+    </cac:OrderLineReference>
+    <cac:DespatchLineReference>
+      <cbc:LineID>2</cbc:LineID>
+      <cac:DocumentReference>
+        <cbc:ID>LINE-DESPATCH-2026-1</cbc:ID>
+      </cac:DocumentReference>
+    </cac:DespatchLineReference>
+    <cac:ReceiptLineReference>
+      <cbc:LineID>3</cbc:LineID>
+      <cac:DocumentReference>
+        <cbc:ID>LINE-RECEIPT-2026-1</cbc:ID>
+      </cac:DocumentReference>
+    </cac:ReceiptLineReference>
+    <cac:Delivery>
+      <cac:DeliveryNoteDocumentReference>
+        <cbc:ID>LINE-DELNOTE-2026-1</cbc:ID>
+      </cac:DeliveryNoteDocumentReference>
+      <cac:DeliveryParty>
+        <cac:PartyName>
+          <cbc:Name>Beta Industries Warehouse North</cbc:Name>
+        </cac:PartyName>
+      </cac:DeliveryParty>
+    </cac:Delivery>
+    <cac:Item>
+      <cbc:Name>Widget Premium XL</cbc:Name>
+      <cac:ClassifiedTaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>19</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:ClassifiedTaxCategory>
+    </cac:Item>
+    <cac:Price>
+      <cbc:PriceAmount currencyID="EUR">100.00</cbc:PriceAmount>
+    </cac:Price>
+  </cac:InvoiceLine>
+</Invoice>

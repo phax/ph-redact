@@ -39,7 +39,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author Philip Helger
  */
-@Command (description = "XML Anonymizer for UBL 2.1 and CII D16B documents",
+@Command (description = "XML Anonymizer for UBL and CII documents",
           name = "ph-redact",
           mixinStandardHelpOptions = true,
           separator = " ")
@@ -53,8 +53,14 @@ public class XMLAnonymizerMain implements Callable <Integer>
   @Option (names = { "-s", "--suffix" }, description = "Output filename suffix (default: -anonymized)")
   private String m_sOutputSuffix = "-anonymized";
 
-  @Option (names = { "-f", "--format" }, description = "Force format: ubl21 or cii-d16b (default: auto-detect)")
+  @Option (names = { "-f", "--format" }, description = "Force format: ubl21 or cii (default: auto-detect)")
   private String m_sFormat;
+
+  @Option (names = { "-p", "--prefix" },
+           description = "Prefix for the replaced identifier values (default: " +
+                         XMLAnonymizer.DEFAULT_ANONYMIZATION_PREFIX +
+                         ")")
+  private String m_sAnonymizationPrefix = XMLAnonymizer.DEFAULT_ANONYMIZATION_PREFIX;
 
   @Option (names = { "--verbose" }, description = "Enable verbose output")
   private boolean m_bVerbose;
@@ -68,6 +74,7 @@ public class XMLAnonymizerMain implements Callable <Integer>
     // Only here to avoid the members are set to final
     m_sTargetDir = null;
     m_sOutputSuffix = null;
+    m_sAnonymizationPrefix = null;
   }
 
   @Override
@@ -160,7 +167,8 @@ public class XMLAnonymizerMain implements Callable <Integer>
 
       try
       {
-        aAnonymizers.computeIfAbsent (eFormat, XMLAnonymizer::new).anonymize (aSourceFile, aOutputFile);
+        aAnonymizers.computeIfAbsent (eFormat, x -> new XMLAnonymizer (x, m_sAnonymizationPrefix))
+                    .anonymize (aSourceFile, aOutputFile);
         LOGGER.info ("Anonymized '" + aSourceFile.getName () + "' -> '" + aOutputFile.getName () + "'");
         nSuccess++;
       }
