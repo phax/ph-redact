@@ -205,7 +205,7 @@ Apache License, Version 2.0
 
 ## News and Noteworthy
 
-v1.1.0 - work in progress
+v1.1.0 - 2026-09-08
 * Added the elements introduced by the EN 16931:2026 syntax bindings (UBL 2.5 and CII D25A) to both stylesheets. UBL: `cac:Annotation/cbc:AnnotationContent`, `cac:DeliveryNoteDocumentReference/cbc:ID`, `cac:DocumentReference/cbc:ID`, `cac:OrderReference/cbc:SalesOrderID`. CII: `ram:BuyerReferenceID` (renamed from `ram:BuyerReference` in D25A) and `ram:DeliveryNoteReferencedDocument/ram:IssuerAssignedID`.
 * Closed further gaps that existed in both editions. UBL: `cbc:AccountingCost`, `cbc:AccountingCostCode`, `cbc:DocumentDescription`, `cac:ExternalReference/cbc:URI` and the `@filename` of the embedded binary object. CII: `ram:CreditorReferenceID`, `ram:DirectDebitMandateID`, `ram:SpecifiedProcuringProject`, `ram:ReceivableSpecifiedTradeAccountingAccount/ram:ID`, `ram:PayableSpecifiedTradeAccountingAccount/ram:ID`, `ram:SpecifiedTradePaymentTerms/ram:Description`, `ram:AdditionalReferencedDocument/ram:Name`, `ram:AdditionalReferencedDocument/ram:URIID` and the `@filename` of the attachment.
 * The prefix of all replacement values is now configurable via the XSLT parameter `anonymization-prefix`, the new `XMLAnonymizer` constructor parameter and the new CLI option `-p` / `--prefix`. The default value `ANONYMIZED` is unchanged. Its case is normalized per context: upper case for identifiers (`ANONYMIZED-DOC-ID`), mixed case for human readable texts (`Anonymized Party`) and lower case for mail addresses, URLs and filenames (`anonymized@example.com`).
