@@ -28,7 +28,7 @@
   <version>1.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>ph-redact-parent-pom</name>
-  <description>Base POM to build ph-redact - XSLT-based XML document anonymizer for UBL 2.1 and CII D16B</description>
+  <description>Base POM to build ph-redact - XSLT-based XML document anonymizer for UBL and CII</description>
   <url>https://github.com/phax/ph-redact</url>
   <inceptionYear>2026</inceptionYear>
 

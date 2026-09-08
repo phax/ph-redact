@@ -289,7 +289,7 @@ public final class XMLAnonymizerFuncTest
     for (final EAnonymizationFormat eFormat : EAnonymizationFormat.values ())
     {
       final String sTestFile = eFormat == EAnonymizationFormat.UBL ? "external/ubl21/invoice-sample.xml"
-                                                                     : "external/cii-d16b/invoice-sample.xml";
+                                                                   : "external/cii-d16b/invoice-sample.xml";
       final Document aDoc = _readTestFile (sTestFile);
       final XMLAnonymizer aAnonymizer = new XMLAnonymizer (eFormat, "REDACTED");
       assertEquals ("REDACTED", aAnonymizer.getAnonymizationPrefix ());
@@ -327,8 +327,10 @@ public final class XMLAnonymizerFuncTest
   public void testEnumValues ()
   {
     assertEquals (2, EAnonymizationFormat.values ().length);
-    assertEquals (EAnonymizationFormat.UBL, EAnonymizationFormat.getFromIDOrNull ("ubl21"));
+    assertEquals (EAnonymizationFormat.UBL, EAnonymizationFormat.getFromIDOrNull ("ubl"));
     assertEquals (EAnonymizationFormat.CII, EAnonymizationFormat.getFromIDOrNull ("cii"));
+    // Legacy ID
+    assertEquals (EAnonymizationFormat.UBL, EAnonymizationFormat.getFromIDOrNull ("ubl21"));
     assertNull (EAnonymizationFormat.getFromIDOrNull ("unknown"));
     assertNull (EAnonymizationFormat.getFromIDOrNull (null));
   }

@@ -24,7 +24,7 @@ Requires Java 17+ and Maven. The build produces:
 This is a multi-module Maven project:
 
 - **`ph-redact`** (library) — Anonymization library. Contains:
-  - **`EAnonymizationFormat`** — Enum mapping format IDs (`ubl21`, `cii`) to their XSLT classpath resources. Also maps DDD syntax IDs to formats via `getFromDDDSyntaxIDOrNull`.
+  - **`EAnonymizationFormat`** — Enum mapping format IDs (`ubl`, `cii`) to their XSLT classpath resources. Also maps DDD syntax IDs to formats via `getFromDDDSyntaxIDOrNull`.
   - **`XMLAnonymizer`** — Core class. Compiles and caches the XSLT `Templates` for a given format, then applies the transformation. Passes the configurable anonymization prefix as the XSLT parameter `anonymization-prefix`. Provides `detectFormat(Document)` for auto-detection via DDD, and a convenience `anonymizeAutoDetect` static method.
   - XSLT stylesheets under `ph-redact/src/main/resources/xslt/`.
 - **`ph-redact-cli`** (command-line client) — Contains:

@@ -27,7 +27,7 @@
   <artifactId>ph-redact-cli</artifactId>
   <packaging>jar</packaging>
   <name>ph-redact-cli</name>
-  <description>XSLT-based XML document anonymizer for UBL 2.1 and CII D16B - command line client</description>
+  <description>XSLT-based XML document anonymizer for UBL and CII - command line client</description>
   <url>https://github.com/phax/ph-redact/ph-redact-cli</url>
   <inceptionYear>2026</inceptionYear>
 

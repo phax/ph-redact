@@ -82,7 +82,7 @@ java -jar ph-redact-cli/target/ph-redact-cli-full.jar [options] <files...>
 |--------|-------------|---------|
 | `-t`, `--target` | Output directory | Current directory |
 | `-s`, `--suffix` | Output filename suffix | `-anonymized` |
-| `-f`, `--format` | Force format (`ubl21` or `cii`) | Auto-detect |
+| `-f`, `--format` | Force format (`ubl` or `cii`) | Auto-detect |
 | `-p`, `--prefix` | Prefix for the replaced identifier values | `ANONYMIZED` |
 | `--verbose` | Enable verbose output | Off |
 | `-h`, `--help` | Show help | |
@@ -114,7 +114,7 @@ For example, `invoice.xml` becomes `invoice-anonymized.xml`.
 
 ```java
 // Explicit format
-XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.UBL_21);
+XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.UBL);
 aAnonymizer.anonymize (new File ("invoice.xml"), new File ("invoice-anonymized.xml"));
 
 // Auto-detect format (uses DDD)
@@ -133,7 +133,7 @@ If no prefix is provided, `ANONYMIZED` is used:
 
 ```java
 // Results in REDACTED-DOC-ID, Redacted Party, redacted@example.com, ...
-XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.UBL_21, "REDACTED");
+XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.UBL, "REDACTED");
 
 // Same for the auto-detecting convenience method
 XMLAnonymizer.anonymizeAutoDetect (new File ("input.xml"), new File ("output.xml"), "REDACTED");
@@ -157,14 +157,14 @@ The XSLT stylesheets can be used independently with any XSLT 1.0 processor:
 
 ```bash
 # UBL
-xsltproc ph-redact/src/main/resources/xslt/ubl21-anonymize.xslt invoice.xml > invoice-anonymized.xml
+xsltproc ph-redact/src/main/resources/xslt/ubl-anonymize.xslt invoice.xml > invoice-anonymized.xml
 
 # CII
 xsltproc ph-redact/src/main/resources/xslt/cii-anonymize.xslt cii-invoice.xml > cii-invoice-anonymized.xml
 
 # With a custom replacement prefix
 xsltproc --stringparam anonymization-prefix REDACTED \
-         ph-redact/src/main/resources/xslt/ubl21-anonymize.xslt invoice.xml > invoice-anonymized.xml
+         ph-redact/src/main/resources/xslt/ubl-anonymize.xslt invoice.xml > invoice-anonymized.xml
 ```
 
 ## Project Layout
@@ -205,11 +205,13 @@ Apache License, Version 2.0
 
 ## News and Noteworthy
 
-v1.0.2 - work in progress
+v1.1.0 - work in progress
 * Added the elements introduced by the EN 16931:2026 syntax bindings (UBL 2.5 and CII D25A) to both stylesheets. UBL: `cac:Annotation/cbc:AnnotationContent`, `cac:DeliveryNoteDocumentReference/cbc:ID`, `cac:DocumentReference/cbc:ID`, `cac:OrderReference/cbc:SalesOrderID`. CII: `ram:BuyerReferenceID` (renamed from `ram:BuyerReference` in D25A) and `ram:DeliveryNoteReferencedDocument/ram:IssuerAssignedID`.
 * Closed further gaps that existed in both editions. UBL: `cbc:AccountingCost`, `cbc:AccountingCostCode`, `cbc:DocumentDescription`, `cac:ExternalReference/cbc:URI` and the `@filename` of the embedded binary object. CII: `ram:CreditorReferenceID`, `ram:DirectDebitMandateID`, `ram:SpecifiedProcuringProject`, `ram:ReceivableSpecifiedTradeAccountingAccount/ram:ID`, `ram:PayableSpecifiedTradeAccountingAccount/ram:ID`, `ram:SpecifiedTradePaymentTerms/ram:Description`, `ram:AdditionalReferencedDocument/ram:Name`, `ram:AdditionalReferencedDocument/ram:URIID` and the `@filename` of the attachment.
 * The prefix of all replacement values is now configurable via the XSLT parameter `anonymization-prefix`, the new `XMLAnonymizer` constructor parameter and the new CLI option `-p` / `--prefix`. The default value `ANONYMIZED` is unchanged. Its case is normalized per context: upper case for identifiers (`ANONYMIZED-DOC-ID`), mixed case for human readable texts (`Anonymized Party`) and lower case for mail addresses, URLs and filenames (`anonymized@example.com`).
 * Harmonized the textual replacement values: the ones that previously read `Anonymous ...` now read `Anonymized ...` (`Anonymous Party` became `Anonymized Party`, `anonymous@example.com` became `anonymized@example.com`, and so on).
+* Renamed the enum constant `EAnonymizationFormat.UBL_21` to `EAnonymizationFormat.UBL`, its format ID from `ubl21` to `ubl` and the XSLT stylesheet `xslt/ubl21-anonymize.xslt` to `xslt/ubl-anonymize.xslt`, because they all cover UBL 2.1 as well as UBL 2.5. The renaming of the enum constant and of the stylesheet are backwards incompatible changes. The legacy format ID `ubl21` is still accepted by `EAnonymizationFormat.getFromIDOrNull` and by the CLI option `-f` / `--format`.
+* The `TransformerFactory` for the XSLT stylesheets is now created via `XMLFactory.createDefaultTransformerFactory ()` of ph-xml, which disallows DOCTYPE declarations as well as the loading of external entities and DTDs.
 
 v1.0.1 - 2026-05-11
 * Restructured the codebase into a multi-module Maven project: `ph-redact` (library) and `ph-redact-cli` (command-line client). The library Maven coordinate `com.helger:ph-redact` is unchanged.

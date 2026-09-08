@@ -53,7 +53,7 @@ public class XMLAnonymizerMain implements Callable <Integer>
   @Option (names = { "-s", "--suffix" }, description = "Output filename suffix (default: -anonymized)")
   private String m_sOutputSuffix = "-anonymized";
 
-  @Option (names = { "-f", "--format" }, description = "Force format: ubl21 or cii (default: auto-detect)")
+  @Option (names = { "-f", "--format" }, description = "Force format: ubl or cii (default: auto-detect)")
   private String m_sFormat;
 
   @Option (names = { "-p", "--prefix" },

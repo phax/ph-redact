@@ -30,8 +30,8 @@ import com.helger.base.lang.EnumHelper;
  */
 public enum EAnonymizationFormat implements IHasID <String>
 {
-  /** OASIS Universal Business Language 2.1/2.25 */
-  UBL ("ubl21", "xslt/ubl-anonymize.xslt"),
+  /** OASIS Universal Business Language 2.1/2.5 */
+  UBL ("ubl", "xslt/ubl-anonymize.xslt"),
   /** UN/CEFACT Cross Industry Invoice D16B/D25A */
   CII ("cii", "xslt/cii-anonymize.xslt");
 
@@ -64,6 +64,10 @@ public enum EAnonymizationFormat implements IHasID <String>
   @Nullable
   public static EAnonymizationFormat getFromIDOrNull (@Nullable final String sID)
   {
+    // Legacy ID "ubl21" (ph-redact < 1.1.0)
+    if ("ubl21".equals (sID))
+      return UBL;
+
     return EnumHelper.getFromIDOrNull (EAnonymizationFormat.class, sID);
   }
 
