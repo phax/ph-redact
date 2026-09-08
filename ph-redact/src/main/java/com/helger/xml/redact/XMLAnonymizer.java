@@ -45,7 +45,9 @@ import com.helger.ddd.DocumentDetailsDeterminator;
 import com.helger.ddd.model.DDDSyntaxList;
 import com.helger.ddd.model.DDDValueProviderList;
 import com.helger.io.resource.ClassPathResource;
+import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.read.DOMReader;
+import com.helger.xml.transform.TransformSourceFactory;
 
 /**
  * Main class for anonymizing XML documents using XSLT transformations. Supports UBL (2.1 and 2.5)
@@ -73,6 +75,26 @@ public class XMLAnonymizer
   private final String m_sAnonymizationPrefix;
   private final Templates m_aTemplates;
 
+  @NonNull
+  private static Templates _loadTemplates (@NonNull final EAnonymizationFormat eFormat)
+  {
+    final String sXSLTPath = eFormat.getXSLTPath ();
+    LOGGER.info ("Loading XSLT stylesheet '" + sXSLTPath + "' for format " + eFormat.getID ());
+    try (final InputStream aIS = new ClassPathResource (sXSLTPath).getInputStream ())
+    {
+      if (aIS == null)
+        throw new IllegalStateException ("Failed to load XSLT resource '" + sXSLTPath + "'");
+
+      // Secure factory
+      final TransformerFactory aFactory = XMLFactory.createDefaultTransformerFactory ();
+      return aFactory.newTemplates (TransformSourceFactory.create (aIS));
+    }
+    catch (final Exception ex)
+    {
+      throw new IllegalStateException ("Failed to compile XSLT stylesheet '" + sXSLTPath + "'", ex);
+    }
+  }
+
   /**
    * Constructor using {@link #DEFAULT_ANONYMIZATION_PREFIX}.
    *
@@ -98,27 +120,9 @@ public class XMLAnonymizer
   {
     ValueEnforcer.notNull (eFormat, "Format");
     m_eFormat = eFormat;
-    m_sAnonymizationPrefix = StringHelper.hasNoText (sAnonymizationPrefix) ? DEFAULT_ANONYMIZATION_PREFIX
-                                                                          : sAnonymizationPrefix;
+    m_sAnonymizationPrefix = StringHelper.isEmpty (sAnonymizationPrefix) ? DEFAULT_ANONYMIZATION_PREFIX
+                                                                         : sAnonymizationPrefix;
     m_aTemplates = _loadTemplates (eFormat);
-  }
-
-  @NonNull
-  private static Templates _loadTemplates (@NonNull final EAnonymizationFormat eFormat)
-  {
-    final String sXSLTPath = eFormat.getXSLTPath ();
-    LOGGER.info ("Loading XSLT stylesheet '" + sXSLTPath + "' for format " + eFormat.getID ());
-    try (final InputStream aIS = new ClassPathResource (sXSLTPath).getInputStream ())
-    {
-      if (aIS == null)
-        throw new IllegalStateException ("Failed to load XSLT resource '" + sXSLTPath + "'");
-      final TransformerFactory aFactory = TransformerFactory.newInstance ();
-      return aFactory.newTemplates (new StreamSource (aIS));
-    }
-    catch (final Exception ex)
-    {
-      throw new IllegalStateException ("Failed to compile XSLT stylesheet '" + sXSLTPath + "'", ex);
-    }
   }
 
   /**

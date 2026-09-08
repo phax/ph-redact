@@ -50,7 +50,7 @@ public final class XMLAnonymizerFuncTest
   public void testDetectFormatUBL21 ()
   {
     final Document aDoc = _readTestFile ("external/ubl21/invoice-sample.xml");
-    assertEquals (EAnonymizationFormat.UBL_21, XMLAnonymizer.detectFormat (aDoc));
+    assertEquals (EAnonymizationFormat.UBL, XMLAnonymizer.detectFormat (aDoc));
   }
 
   @Test
@@ -64,7 +64,7 @@ public final class XMLAnonymizerFuncTest
   public void testAnonymizeUBL21Invoice () throws TransformerException
   {
     final Document aDoc = _readTestFile ("external/ubl21/invoice-sample.xml");
-    final XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.UBL_21);
+    final XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.UBL);
     final Document aResult = aAnonymizer.anonymize (aDoc);
     assertNotNull (aResult);
 
@@ -158,7 +158,7 @@ public final class XMLAnonymizerFuncTest
   public void testDetectFormatUBL25 ()
   {
     final Document aDoc = _readTestFile ("external/ubl25/invoice-sample.xml");
-    assertEquals (EAnonymizationFormat.UBL_21, XMLAnonymizer.detectFormat (aDoc));
+    assertEquals (EAnonymizationFormat.UBL, XMLAnonymizer.detectFormat (aDoc));
   }
 
   @Test
@@ -173,7 +173,7 @@ public final class XMLAnonymizerFuncTest
   {
     // EN 16931:2026 UBL 2.5 invoice
     final Document aDoc = _readTestFile ("external/ubl25/invoice-sample.xml");
-    final XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.UBL_21);
+    final XMLAnonymizer aAnonymizer = new XMLAnonymizer (EAnonymizationFormat.UBL);
     final Document aResult = aAnonymizer.anonymize (aDoc);
     assertNotNull (aResult);
 
@@ -288,7 +288,7 @@ public final class XMLAnonymizerFuncTest
   {
     for (final EAnonymizationFormat eFormat : EAnonymizationFormat.values ())
     {
-      final String sTestFile = eFormat == EAnonymizationFormat.UBL_21 ? "external/ubl21/invoice-sample.xml"
+      final String sTestFile = eFormat == EAnonymizationFormat.UBL ? "external/ubl21/invoice-sample.xml"
                                                                      : "external/cii-d16b/invoice-sample.xml";
       final Document aDoc = _readTestFile (sTestFile);
       final XMLAnonymizer aAnonymizer = new XMLAnonymizer (eFormat, "REDACTED");
@@ -311,14 +311,14 @@ public final class XMLAnonymizerFuncTest
   {
     // null and empty fall back to the default
     assertEquals (XMLAnonymizer.DEFAULT_ANONYMIZATION_PREFIX,
-                  new XMLAnonymizer (EAnonymizationFormat.UBL_21).getAnonymizationPrefix ());
+                  new XMLAnonymizer (EAnonymizationFormat.UBL).getAnonymizationPrefix ());
     assertEquals (XMLAnonymizer.DEFAULT_ANONYMIZATION_PREFIX,
-                  new XMLAnonymizer (EAnonymizationFormat.UBL_21, null).getAnonymizationPrefix ());
+                  new XMLAnonymizer (EAnonymizationFormat.UBL, null).getAnonymizationPrefix ());
     assertEquals (XMLAnonymizer.DEFAULT_ANONYMIZATION_PREFIX,
-                  new XMLAnonymizer (EAnonymizationFormat.UBL_21, "").getAnonymizationPrefix ());
+                  new XMLAnonymizer (EAnonymizationFormat.UBL, "").getAnonymizationPrefix ());
 
     final Document aDoc = _readTestFile ("external/ubl21/invoice-sample.xml");
-    final String sXml = com.helger.xml.serialize.write.XMLWriter.getNodeAsString (new XMLAnonymizer (EAnonymizationFormat.UBL_21,
+    final String sXml = com.helger.xml.serialize.write.XMLWriter.getNodeAsString (new XMLAnonymizer (EAnonymizationFormat.UBL,
                                                                                                     null).anonymize (aDoc));
     _assertContains (sXml, XMLAnonymizer.DEFAULT_ANONYMIZATION_PREFIX + "-DOC-ID");
   }
@@ -327,7 +327,7 @@ public final class XMLAnonymizerFuncTest
   public void testEnumValues ()
   {
     assertEquals (2, EAnonymizationFormat.values ().length);
-    assertEquals (EAnonymizationFormat.UBL_21, EAnonymizationFormat.getFromIDOrNull ("ubl21"));
+    assertEquals (EAnonymizationFormat.UBL, EAnonymizationFormat.getFromIDOrNull ("ubl21"));
     assertEquals (EAnonymizationFormat.CII, EAnonymizationFormat.getFromIDOrNull ("cii"));
     assertNull (EAnonymizationFormat.getFromIDOrNull ("unknown"));
     assertNull (EAnonymizationFormat.getFromIDOrNull (null));
