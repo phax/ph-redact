@@ -319,7 +319,7 @@ public final class XMLAnonymizerFuncTest
 
     final Document aDoc = _readTestFile ("external/ubl21/invoice-sample.xml");
     final String sXml = com.helger.xml.serialize.write.XMLWriter.getNodeAsString (new XMLAnonymizer (EAnonymizationFormat.UBL,
-                                                                                                    null).anonymize (aDoc));
+                                                                                                     null).anonymize (aDoc));
     _assertContains (sXml, XMLAnonymizer.DEFAULT_ANONYMIZATION_PREFIX + "-DOC-ID");
   }
 
