@@ -39,6 +39,7 @@ import org.w3c.dom.Document;
 
 import com.helger.annotation.Nonempty;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.log.ILogHandler;
 import com.helger.base.string.StringHelper;
 import com.helger.ddd.DocumentDetails;
 import com.helger.ddd.DocumentDetailsDeterminator;
@@ -68,7 +69,7 @@ public class XMLAnonymizer
   static
   {
     // No info logging
-    DDD.setInfoHdl (x -> {});
+    DDD.setLogHandler (ILogHandler.createNoOp ());
   }
 
   private final EAnonymizationFormat m_eFormat;
